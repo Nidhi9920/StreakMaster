@@ -48,18 +48,34 @@ body{
   gap:12px;
   align-items:center;
 }
-.nav-links a, .link-btn{
-  color:#fff;
-  text-decoration:none;
-  padding:8px 12px;
-  border-radius:10px;
-  font-weight:600;
+.nav-links a{
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
 }
-.nav-links a:hover, .link-btn:hover{
+.nav-links a:hover{
   transform:translateY(-2px);
   box-shadow:0 6px 18px rgba(177,76,255,0.08);
+  background: rgba(255, 255, 255, 0.15);
+}
+/* Separate logout button styling */
+.link-btn {
+  background: #ff4d6d;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
+.link-btn:hover {
+  background: #ff1e4d;
+  transform: scale(1.05);
+}
 /* Auth page */
 .auth-page{
   display:flex;
@@ -136,9 +152,41 @@ body{
   padding: 10px;
   border-radius: 8px;
   width: 100%;
-  background: rgba(255,255,255,0.02);
-  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.1); /* lighter, translucent background */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff; /* make text white */
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
 }
+
+/* Placeholder text color */
+.habit-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* On focus — glowing outline */
+.habit-form input:focus {
+  border-color: #00b4d8;
+  box-shadow: 0 0 6px #00b4d8;
+  background: rgba(255, 255, 255, 0.15);
+}
+.habit-form .btn {
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  color: #fff;
+  font-weight: 600;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.habit-form .btn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #0077b6, #00b4d8);
+}
+
 .habit-list {
   display:flex;
   flex-direction:column;

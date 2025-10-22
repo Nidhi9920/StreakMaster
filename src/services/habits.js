@@ -3,7 +3,7 @@ import {
     collection,
     query,
     where,
-    orderBy,
+    // orderBy,
     onSnapshot,
     addDoc,
     serverTimestamp,
@@ -21,11 +21,12 @@ import {
    * Real-time subscription to habits for a user.
    */
   export function subscribeHabits(userId, onUpdate, onError) {
-    const q = query(
-      collection(db, "habits"),
-      where("userId", "==", userId),
-      orderBy("createdAt", "desc")
-    );
+    if (!userId) {
+      console.warn("subscribeHabits called without a valid userId");
+      return;
+    }
+  
+    const q = query(collection(db, "habits"), where("userId", "==", userId));
   
     return onSnapshot(
       q,
@@ -34,10 +35,12 @@ import {
         onUpdate(habits);
       },
       (err) => {
+        console.error("Firestore onSnapshot error:", err);
         if (onError) onError(err);
       }
     );
   }
+  
   
   /**
    * Create a new habit.

@@ -1,13 +1,15 @@
 // src/components/Habit/HabitForm.jsx
 import React, { useState } from "react";
-import { createHabit } from "../../services/habits";
+import { useAuth } from "../../context/AuthContext";
+import useHabit from "../../hooks/useHabits";
 
-export default function HabitForm({ userId }) {
+export default function HabitForm() {
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-
+  const { currentUser } = useAuth();
+  const { addHabit } = useHabit();
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
@@ -15,9 +17,14 @@ export default function HabitForm({ userId }) {
       setError("Please enter a habit title.");
       return;
     }
+    // console.log("User details who is logged in: ", currentUser?.uid);
+    if(!currentUser?.uid){
+      setError("User not logged in yet.")
+      return;
+    }
     setSaving(true);
     try {
-      await createHabit({ userId, title: title.trim(), note: note.trim() });
+      await addHabit({ userId: currentUser?.uid, title: title.trim(), note: note.trim() });
       setTitle("");
       setNote("");
     } catch (err) {

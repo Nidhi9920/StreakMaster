@@ -16,7 +16,7 @@ export default function useHabit() {
 
   // Real-time subscription to habits
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser?.uid) return;
 
     setLoading(true);
     const unsubscribe = subscribeHabits(
