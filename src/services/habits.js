@@ -74,16 +74,20 @@ import {
    * Updates habit streaks and userStats for leaderboard.
    */
   export async function checkInHabit(habitId, userId, userDisplayName = "Anonymous") {
-    const today = todayISO();
     const habitRef = doc(db, "habits", habitId);
+    const userStatsRef = doc(db, "userStats", userId);
+    const today = todayISO();
   
     return await runTransaction(db, async (transaction) => {
+      // Step 1: Read all docs first
       const habitSnap = await transaction.get(habitRef);
+      const userStatsSnap = await transaction.get(userStatsRef);
+  
       if (!habitSnap.exists()) throw new Error("Habit does not exist");
   
       const habit = habitSnap.data();
   
-      // Security: ensure userId matches
+      // Security check
       if (habit.userId !== userId) throw new Error("Unauthorized");
   
       // Already checked today?
@@ -98,29 +102,28 @@ import {
       if (isConsecutive(prevDate, today)) {
         newStreak = (habit.currentStreak || 0) + 1;
       }
-  
       const newLongest = Math.max(habit.longestStreak || 0, newStreak);
   
-      // Update habit
-      const updatedData = {
+      // Previous highest streak from userStats
+      const prevHighest = userStatsSnap.exists() ? userStatsSnap.data().highestStreak || 0 : 0;
+  
+      // Step 2: Update both documents
+      const updatedHabitData = {
         currentStreak: newStreak,
         longestStreak: newLongest,
         lastCheckIn: today,
-        [`checkins.${today}`]: true
+        [`checkins.${today}`]: true,
       };
   
-      transaction.update(habitRef, updatedData);
-  
-      // --- Update userStats for Leaderboard ---
-      const userStatsRef = doc(db, "userStats", userId);
+      transaction.update(habitRef, updatedHabitData);
   
       transaction.set(
         userStatsRef,
         {
           userId,
           displayName: userDisplayName || "Anonymous",
-          highestStreak: Math.max(newStreak, habit.userHighestStreak || 0),
-          updatedAt: serverTimestamp()
+          highestStreak: Math.max(prevHighest, newStreak),
+          updatedAt: serverTimestamp(),
         },
         { merge: true }
       );
@@ -130,11 +133,12 @@ import {
         habit: {
           id: habitId,
           ...habit,
-          ...updatedData
-        }
+          ...updatedHabitData,
+        },
       };
     });
   }
+  
   
   /**
    * Edit habit (title/note)

@@ -1,17 +1,21 @@
-// src/utils/dateUtils.js
 export function todayISO() {
-    const d = new Date();
-    return d.toISOString().slice(0, 10); // YYYY-MM-DD
-  }
-  
-  export function isoYesterday(isoDate) {
-    const d = new Date(isoDate + "T00:00:00");
-    d.setDate(d.getDate() - 1);
-    return d.toISOString().slice(0, 10);
-  }
-  
-  export function isConsecutive(prevISO, currentISO) {
-    if (!prevISO) return false;
-    return isoYesterday(currentISO) === prevISO;
-  }
-  
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // e.g. "2025-10-23"
+}
+
+/**
+ * Check if two date strings (in "YYYY-MM-DD" format) are consecutive days.
+ */
+export function isConsecutive(prevISO, currentISO) {
+  if (!prevISO) return false;
+
+  const prev = new Date(prevISO);
+  const curr = new Date(currentISO);
+
+  // Normalize to midnight UTC
+  prev.setUTCHours(0, 0, 0, 0);
+  curr.setUTCHours(0, 0, 0, 0);
+
+  const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+  return diffDays === 1;
+}

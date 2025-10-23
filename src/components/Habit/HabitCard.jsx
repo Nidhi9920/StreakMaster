@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { checkInHabit, deleteHabit } from "../../services/habits";
 import { useAuth } from "../../context/AuthContext";
 import { todayISO } from "../../utils/dateUtil";
@@ -9,7 +9,17 @@ export default function HabitCard({ habit }) {
   const { currentUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [localHabit, setLocalHabit] = useState(habit);
-  const [badge, setBadge] = useState(null); // new badge state
+  const [badge, setBadge] = useState(null);
+  const [animateStreak, setAnimateStreak] = useState(false);
+
+  // Animate streak whenever currentStreak changes
+  useEffect(() => {
+    if (localHabit.currentStreak > 0) {
+      setAnimateStreak(true);
+      const timeout = setTimeout(() => setAnimateStreak(false), 600);
+      return () => clearTimeout(timeout);
+    }
+  }, [localHabit.currentStreak]);
 
   async function handleCheckIn() {
     setLoading(true);
@@ -30,12 +40,11 @@ export default function HabitCard({ habit }) {
 
         setLocalHabit(updatedHabit);
 
-        // --- Check for badge unlock ---
+        // 🎖 Check for badge unlock
         const unlocked = getUnlockedBadge(updatedHabit.currentStreak);
         if (unlocked) {
           setBadge(unlocked);
           launchConfetti();
-          // auto hide badge after 5s
           setTimeout(() => setBadge(null), 5000);
         }
       } else if (res.status === "already_checked") {
@@ -50,7 +59,7 @@ export default function HabitCard({ habit }) {
 
   function launchConfetti() {
     confetti({
-      particleCount: 150,
+      particleCount: 180,
       spread: 70,
       origin: { y: 0.6 },
       gravity: 0.5,
@@ -75,9 +84,18 @@ export default function HabitCard({ habit }) {
       <div className="habit-left">
         <h4 className="habit-title">{localHabit.title}</h4>
         {localHabit.note && <p className="muted">{localHabit.note}</p>}
+
+        {/* 🔥 Animated Streaks */}
         <div className="streaks">
-          <span>🔥 {localHabit.currentStreak || 0} day(s)</span>
-          <span className="muted">Longest: {localHabit.longestStreak || 0}</span>
+          <span
+            className={`current-streak ${animateStreak ? "pulse" : ""}`}
+          >
+            🔥 <strong>{localHabit.currentStreak || 0}</strong> day
+            {localHabit.currentStreak > 1 ? "s" : ""} streak
+          </span>
+          <span className="longest-streak">
+            🏆 Longest: <strong>{localHabit.longestStreak || 0}</strong>
+          </span>
         </div>
       </div>
 
@@ -90,13 +108,15 @@ export default function HabitCard({ habit }) {
           {checkedToday ? "Checked" : loading ? "Checking..." : "Check In"}
         </button>
 
-        <button className="link-btn small" onClick={handleDelete}>Delete</button>
+        <button className="link-btn small" onClick={handleDelete}>
+          Delete
+        </button>
       </div>
 
-      {/* Badge Popup */}
+      {/* 🏅 Badge Popup */}
       {badge && (
         <div className="badge-popup" style={{ borderColor: badge.color }}>
-          🏅 {badge.name} Unlocked!
+          🏅 <strong>{badge.name}</strong> Unlocked!
         </div>
       )}
     </div>
