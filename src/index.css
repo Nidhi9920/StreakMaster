@@ -269,7 +269,18 @@ body{
   text-decoration:underline;
   font-size:13px;
 }
-.leaderboard {
+.leaderboard{
+  text-align: center;
+  max-width: 600px;
+  margin: 2rem auto;
+}
+.leaderboard h2 {
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.leaderboard-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -277,23 +288,64 @@ body{
 
 .leaderboard-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px;
+  justify-content: space-between;
+  background: #208de033;
+  border: 1px solid #208de0;
+  border-radius: 10px;
+  transition: transform 0.2s ease;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.leaderboard-item:hover {
+  transform: translateY(-2px);
+}
+.user-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-info .name {
+  font-weight: 500;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bolder;
+  justify-self: center;
+}
+
+.user-info .streak {
+  color: #ff5722;
+  font-weight: bold;
+  text-align: right;
+}
+.gold {
+  background: linear-gradient(90deg, #FFD70033, #FFD70011);
+  border: 1px solid #FFD70066;
+}
+
+.silver {
+  background: linear-gradient(90deg, #C0C0C033, #C0C0C011);
+  border: 1px solid #C0C0C066;
+}
+
+.bronze {
+  background: linear-gradient(90deg, #cd7f3233, #cd7f3211);
+  border: 1px solid #cd7f3266;
 }
 
 .rank {
   font-size: 1.3rem;
   font-weight: bold;
   color: #ff9800;
+  flex: 1; /* allow rank or name to take space evenly */
+  text-align: left;
 }
 
-.streak {
-  font-weight: bold;
-  color: #e65100;
-}
 
-.leaderboard-table {
+/* .leaderboard-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 16px;
@@ -316,7 +368,7 @@ body{
 .leaderboard-table tr:hover{
   background: rgba(255,255,255,0.04);
   transition: 0.2s;
-}
+} */
 .badge-popup {
   position: absolute;
   background: white;
